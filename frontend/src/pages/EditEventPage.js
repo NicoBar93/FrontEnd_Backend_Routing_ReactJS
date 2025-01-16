@@ -5,7 +5,7 @@ export default function EventsPage() {
 
     return (
         <>
-            <EventForm event={data.event} />
+            <EventForm event={data.event} method='patch' />
         </>
     );
 }
