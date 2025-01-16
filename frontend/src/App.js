@@ -4,7 +4,7 @@ import EventsPage, { loader as fetchedEvents } from "./pages/EventsPage";
 import EventDetailPage, {
   loader as eventDetailLoader,
 } from "./pages/EventDetailPage";
-import NewEventPage from "./pages/NewEventPage";
+import NewEventPage, { action as actionNewEvent } from "./pages/NewEventPage";
 import EditEventPage from "./pages/EditEventPage";
 import RootLayout from "./pages/RootLayout";
 import EventsRoot from "./pages/EventsRoot";
@@ -17,22 +17,33 @@ function App() {
       element: <RootLayout />,
       errorElement: <ErrorPage />,
       children: [
-        { index: true, element: <HomePage /> },
+        { index: true, 
+          element: <HomePage /> 
+        },
         {
-          path: "/events",
+          path: "events",
           element: <EventsRoot />,
           children: [
-            { index: true, 
-              element: <EventsPage />, 
-              loader: fetchedEvents 
+            { index: true, element: <EventsPage />, loader: fetchedEvents },
+            {
+              path: ":eventId",
+              id: "event-detail",
+              loader: eventDetailLoader,
+              children: [
+                {
+                  index: true,
+                  element: <EventDetailPage />,
+                },
+                { path: "edit", 
+                  element: <EditEventPage /> 
+                },
+              ],
             },
             {
-              path: "/events/:eventId",
-              element: <EventDetailPage />,
-              loader: eventDetailLoader
+              path: "new",
+              element: <NewEventPage />,
+              action: actionNewEvent,
             },
-            { path: "/events/new", element: <NewEventPage /> },
-            { path: "/events/:eventId/edit", element: <EditEventPage /> },
           ],
         },
       ],
