@@ -12,7 +12,7 @@ function EventsList({ events }) {
             key={event.id}
             className={classes.item}
           >
-            <Link to={event.id}>
+            <Link to={`/events/${event.id}`}>
               <img
                 src={event.image}
                 alt={event.title}

@@ -1,14 +1,29 @@
-import { useRouteLoaderData, redirect } from "react-router-dom";
+import { useRouteLoaderData, redirect, Await } from "react-router-dom";
+import { Suspense } from "react";
 import EventItem from "../components/EventItem";
-export default function EventsDetailPage() {
-  const data = useRouteLoaderData("event-detail");
+import EventsList from "../components/EventsList";
 
-  return <EventItem event={data.event} />;
+export default function EventsDetailPage() {
+  const { event, events } = useRouteLoaderData("event-detail");
+
+  return (
+    <>
+      <Suspense fallback={<p>Loading event details...</p>}>
+        <Await resolve={event}>
+          {(loadedEvent) => <EventItem event={loadedEvent} />}
+        </Await>
+      </Suspense>
+      <Suspense fallback={<p>Loading list of events...</p>}>
+        <Await resolve={events}>
+          {(loadedEvents) => <EventsList events={loadedEvents} />}
+        </Await>
+      </Suspense>
+    </>
+  );
 }
 
-export async function loader({ request, params }) {
-  const id = params.eventId;
-
+// FOR DEFERING CONTENTS
+async function loadEvent(id) {
   const response = await fetch("http://localhost:8080/events/" + id);
 
   if (!response.ok) {
@@ -21,9 +36,25 @@ export async function loader({ request, params }) {
       }
     );
   } else {
-    return response;
+    const resData = await response.json();
+    return resData.event;
   }
 }
+
+async function loadEvents() {
+  const response = await fetch("http://localhost:8080/events");
+
+  if (!response.ok) {
+    throw new Response(JSON.stringify({ message: "Could not fetch events." }), {
+      status: 500,
+    });
+  } else {
+    const resData = await response.json();
+    return resData.events;
+  }
+}
+
+// END DEFERING CONTENTS
 
 export async function action({ params, request }) {
   const id = params.eventId;
@@ -43,5 +74,14 @@ export async function action({ params, request }) {
     );
   }
 
-  return redirect('/events');
+  return redirect("/events");
+}
+
+export async function loader({ request, params }) {
+  const id = params.eventId;
+
+  return {
+    event: await loadEvent(id),
+    events: loadEvents(),
+  };
 }

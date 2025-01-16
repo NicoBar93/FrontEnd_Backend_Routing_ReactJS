@@ -2,7 +2,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import EventsPage, { loader as fetchedEvents } from "./pages/EventsPage";
 import EventDetailPage, {
-  loader as eventDetailLoader, action as eventDetailAction
+  loader as eventDetailLoader,
+  action as eventDetailAction,
 } from "./pages/EventDetailPage";
 import NewEventPage from "./pages/NewEventPage";
 import EditEventPage from "./pages/EditEventPage";
@@ -10,6 +11,7 @@ import RootLayout from "./pages/RootLayout";
 import EventsRoot from "./pages/EventsRoot";
 import ErrorPage from "./pages/Error";
 import { action as manipulateActionEvent } from "./components/EventForm";
+import NewsletterPage, { action as newsletterAction } from "./pages/Newsletter";
 
 function App() {
   const router = createBrowserRouter([
@@ -18,9 +20,7 @@ function App() {
       element: <RootLayout />,
       errorElement: <ErrorPage />,
       children: [
-        { index: true, 
-          element: <HomePage /> 
-        },
+        { index: true, element: <HomePage /> },
         {
           path: "events",
           element: <EventsRoot />,
@@ -36,7 +36,8 @@ function App() {
                   element: <EventDetailPage />,
                   action: eventDetailAction,
                 },
-                { path: "edit", 
+                {
+                  path: "edit",
                   element: <EditEventPage />,
                   action: manipulateActionEvent,
                 },
@@ -48,6 +49,11 @@ function App() {
               action: manipulateActionEvent,
             },
           ],
+        },
+        {
+          path: "newsletter",
+          element: <NewsletterPage />,
+          action: newsletterAction,
         },
       ],
     },
